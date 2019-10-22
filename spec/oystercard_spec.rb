@@ -8,31 +8,21 @@ describe Oystercard do
       expect(card.balance).to eq 0
     end
 
-    xit 'in_journey? is false' do
-
-      expect(card.in_journey).to be false
+    it 'checks for empty journey history' do
+      expect(card.journeys).to be_empty
     end
   end
 
   context 'with balance' do
-    before do 
+    before do
       card.top_up(50)
       card.touch_in(station)
     end
 
     let(:station){ double :station }
 
-    xit 'touch in card' do
-      expect(card.in_journey).to be true
-    end
-
-    xit 'touch out card' do
-      card.touch_out
-      expect(card.in_journey).to be false
-    end
-
     it 'touch out card reduces balance by minimum fare' do
-      expect { card.touch_out }.to change{ card.balance }.by -1
+      expect { card.touch_out(station) }.to change{ card.balance }.by -1
     end
 
   end
@@ -42,18 +32,31 @@ describe Oystercard do
       card.top_up(50)
     end
 
-    let(:station){ double :station }
+    let(:entry_station){ double :entry_station }
+    let(:exit_station){ double :exit_station }
 
     it 'assigning the entry station' do
-      card.touch_in(station)
-      expect(card.entry_station).to eq station
+      card.touch_in(entry_station)
+      expect(card.entry_station).to eq entry_station
     end
 
     it 'forgets entry station' do
-      card.touch_in(station)
-      card.touch_out
+      card.touch_in(entry_station)
+      card.touch_out(exit_station)
       expect(card.entry_station).to eq nil
     end
+
+    it 'checks for journey hash' do
+      expect(card.journeys).to be_a(Array)
+    end
+
+    it 'creates journey record' do
+      journey = { entry: entry_station, exit: exit_station }
+      card.touch_in(entry_station)
+      card.touch_out(exit_station)
+      expect(card.journeys).to include(journey)
+    end
+
   end
 
   context 'without balance' do
