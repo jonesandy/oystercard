@@ -17,8 +17,10 @@ describe Oystercard do
   context 'with balance' do
     before do 
       card.top_up(50)
-      card.touch_in
+      card.touch_in(station)
     end
+
+    let(:station){ double :station }
 
     it 'touch in card' do
       expect(card.in_journey).to be true
@@ -32,12 +34,34 @@ describe Oystercard do
     it 'touch out card reduces balance by minimum fare' do
       expect { card.touch_out }.to change{ card.balance }.by -1
     end
+
+  end
+
+  context 'stations' do
+    before do
+      card.top_up(50)
+    end
+
+    let(:station){ double :station }
+
+    it 'assigning the entry station' do
+      card.touch_in(station)
+      expect(card.entry_station).to eq station
+    end
+
+    it 'forgets entry station' do
+      card.touch_in(station)
+      card.touch_out
+      expect(card.entry_station).to eq nil
+    end
   end
 
   context 'without balance' do
 
+    let(:station){ double :station }
+
     it 'check minimum balance on touch in' do
-      expect { card.touch_in }.to raise_error("Balance too low to touch in. Minimum balance is £#{Oystercard::MINIMUM_BALANCE}")
+      expect { card.touch_in(station) }.to raise_error("Balance too low to touch in. Minimum balance is £#{Oystercard::MINIMUM_BALANCE}")
     end
   end
 
