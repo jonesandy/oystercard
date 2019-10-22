@@ -8,7 +8,7 @@ describe Oystercard do
       expect(card.balance).to eq 0
     end
 
-    it 'in_journey? is false' do
+    xit 'in_journey? is false' do
 
       expect(card.in_journey).to be false
     end
@@ -22,11 +22,11 @@ describe Oystercard do
 
     let(:station){ double :station }
 
-    it 'touch in card' do
+    xit 'touch in card' do
       expect(card.in_journey).to be true
     end
 
-    it 'touch out card' do
+    xit 'touch out card' do
       card.touch_out
       expect(card.in_journey).to be false
     end
